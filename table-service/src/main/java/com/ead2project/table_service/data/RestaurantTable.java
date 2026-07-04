@@ -3,7 +3,7 @@ package com.ead2project.table_service.data;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tables")
+@Table(name = "tbl_tables")
 public class RestaurantTable {
 
     @Id
