@@ -36,12 +36,12 @@ public class OrderController {
     }
 
     @DeleteMapping(path="/orders/{id}")
-    public void deleteOrderbyID(@PathVariable int id){
+    public void deleteOrderByID(@PathVariable int id){
         obj.deleteOrderById(id);
     }
 
     @GetMapping(path="/orders", params = {"status"})
-    public List<Order> getOrderByStatus(@PathVariable String status){
+    public List<Order> getOrderByStatus(@RequestParam String status){
         return obj.getOrderByStatus(status);
     }
 
@@ -50,7 +50,16 @@ public class OrderController {
         return obj.updateOrderStatus(id, status);
     }
 
+    @GetMapping(path="/orders/items/{id}")
     public List<Integer> getOrderItems(@PathVariable int id){
         return obj.getOrderItems(id);
+    }
+
+    @PostMapping("/orders/{orderId}/items")
+    public Order addItemToOrder(
+            @PathVariable int orderId,
+            @RequestBody int itemId) {
+
+        return obj.addItemToOrder(orderId, itemId);
     }
 }
