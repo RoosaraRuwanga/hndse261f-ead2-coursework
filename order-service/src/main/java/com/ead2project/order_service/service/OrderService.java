@@ -4,12 +4,14 @@ import com.ead2project.order_service.data.Order;
 import com.ead2project.order_service.data.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class OrderService {
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
     private OrderRepository ordRep;
@@ -53,5 +55,13 @@ public class OrderService {
 
     public List<Order> getOrderByStatus(String status) {
         return ordRep.getOrderByStatus(status);
+    }
+
+    public List<Integer> getOrderItems(int id)
+    {
+        Order order = ordRep.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order does not exist!"));
+
+        return order.getItems();
     }
 }

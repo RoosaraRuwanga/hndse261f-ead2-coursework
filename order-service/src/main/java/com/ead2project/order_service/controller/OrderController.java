@@ -45,9 +45,12 @@ public class OrderController {
         return obj.getOrderByStatus(status);
     }
 
-    // CHANGE THIS TO ACTION BASED REQUEST LATER
-    @PutMapping(path="/orders", params = {"id", "status"})
+    @PatchMapping(path="/orders", params = {"id", "status"})
     public Order updateOrderStatus(@RequestParam int id, @RequestParam String status){
         return obj.updateOrderStatus(id, status);
+    }
+
+    public List<Integer> getOrderItems(@PathVariable int id){
+        return obj.getOrderItems(id);
     }
 }
