@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @Query("SELECT o FROM Order o where o.order_status = ?1")
+    @Query("SELECT o FROM Order o where o.status = ?1")
     List<Order> getOrderByStatus(String status);
 }

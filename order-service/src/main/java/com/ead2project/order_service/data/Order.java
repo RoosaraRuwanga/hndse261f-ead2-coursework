@@ -2,6 +2,7 @@ package com.ead2project.order_service.data;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,8 @@ public class Order {
             name = "tbl_order_items",
             joinColumns = @JoinColumn(name = "order_id")
     )
-    private List<Integer> items;
+    @Column(name = "item_id")
+    private List<Integer> items = new ArrayList<>();
 
     @Column(name = "total_price")
     private double total_price;

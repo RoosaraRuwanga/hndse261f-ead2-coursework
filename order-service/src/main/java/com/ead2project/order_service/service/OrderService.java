@@ -46,7 +46,7 @@ public class OrderService {
         Optional<Order> optionalOrd = ordRep.findById(id);
         if (optionalOrd.isPresent()) {
             Order ord = optionalOrd.get();
-            ord.setStatus("status");
+            ord.setStatus(status);
 
             return ordRep.save(ord);
         }
@@ -63,5 +63,14 @@ public class OrderService {
                 .orElseThrow(() -> new RuntimeException("Order does not exist!"));
 
         return order.getItems();
+    }
+
+    public Order addItemToOrder(int orderId, int itemId) {
+        Order order = ordRep.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order does not exist!"));
+
+        order.addItem(itemId);
+
+        return ordRep.save(order);
     }
 }
