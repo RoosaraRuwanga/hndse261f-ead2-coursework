@@ -7,7 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
+        <module name="item-service" />
         <module name="ingredient-service" />
+        <module name="table-service" />
+        <module name="order-service" />
         <module name="employee-service" />
       </profile>
     </annotationProcessing>
@@ -17,6 +20,9 @@
       <module name="api-gateway" options="-parameters" />
       <module name="employee-service" options="-parameters" />
       <module name="ingredient-service" options="-parameters" />
+      <module name="item-service" options="-parameters" />
+      <module name="order-service" options="-parameters" />
+      <module name="table-service" options="-parameters" />
     </option>
   </component>
 </project>

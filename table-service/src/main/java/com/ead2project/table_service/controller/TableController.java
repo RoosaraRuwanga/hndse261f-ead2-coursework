@@ -24,6 +24,7 @@ public class TableController {
         return obj.getTableById(id);
     }
 
+    //I *think* Mona forget a GetMapping Here...
     public List<RestaurantTable> getFreeTables(){
         return obj.getFreeTables();
     }
