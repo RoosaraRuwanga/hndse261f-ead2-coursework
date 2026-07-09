@@ -7,6 +7,17 @@ e_id int PRIMARY KEY AUTO_INCREMENT,
  role VARCHAR(255) NOT NULL,
  salary DECIMAL);
 
+/*CREATE DATABASE IF NOT EXISTS db_employee;   (!!New database, change with caution!!)
+USE db_employee;
+CREATE TABLE tbl_employee (
+e_id int PRIMARY KEY AUTO_INCREMENT,
+password VARCHAR(255) NOT NULL,
+ name VARCHAR(255) NOT NULL,
+ age INT NOT NULL ,
+ role VARCHAR(255) NOT NULL,
+ emp_status VARCHAR(255) NOT NULL,
+ salary DECIMAL);*/
+
 CREATE DATABASE db_tables;
 USE db_tables;
 CREATE TABLE tbl_tables (
