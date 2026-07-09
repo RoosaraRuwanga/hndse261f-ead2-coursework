@@ -3,48 +3,39 @@ package com.ead2project.employee_service.data;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name= "tbl_employee")
+@Table(name = "tbl_employee")
 public class Employee {
 
     @Id
-    @Column(name= "e_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "e_id")
+    
     private int emp_id;
-
-    @Column(name = "password")
     private String password;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "age")
     private byte age;
-
-    @Column(name = "role")
     private String role;
-
-    @Column(name = "emp_status")
     private String emp_status;
-
-    @Column(name = "salary")
     private double salary;
-
     private Integer assigned_order_id;
 
     public Employee() {
     }
 
-    public Employee(String password, String name, byte age, String role,String emp_status, double salary,Integer assigned_order_id){
-        this.password= password;
-        this.name= name;
-        this.age= age;
-        this.role= role;
-        this.emp_status= emp_status;
-        this.salary= salary;
+    public Employee(String password, String name, byte age, String role,
+            String emp_status, double salary, Integer assigned_order_id) {
+        this.password = password;
+        this.name = name;
+        this.age = age;
+        this.role = role;
+        this.emp_status = emp_status;
+        this.salary = salary;
         this.assigned_order_id = assigned_order_id;
     }
 
-    public int getEmp_id() {return emp_id;}
+    public int getEmp_id() {
+        return emp_id;
+    }
 
     public void setEmp_id(int emp_id) {
         this.emp_id = emp_id;
@@ -70,7 +61,9 @@ public class Employee {
         return age;
     }
 
-    public void setAge(byte age) {this.age = age;}
+    public void setAge(byte age) {
+        this.age = age;
+    }
 
     public String getRole() {
         return role;
@@ -92,7 +85,9 @@ public class Employee {
         return salary;
     }
 
-    public void setSalary(double salary) {this.salary = salary;}
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
 
     public Integer getAssigned_order_id() {
         return assigned_order_id;
@@ -101,5 +96,4 @@ public class Employee {
     public void setAssigned_order_id(Integer assigned_order_id) {
         this.assigned_order_id = assigned_order_id;
     }
-
 }

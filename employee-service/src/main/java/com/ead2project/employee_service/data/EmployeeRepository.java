@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
-    @Query("Select t from Employee t where t.emp_status = ?1")
-    List<Employee> findEmployeeByStatus(String status);
+    @Query("SELECT e FROM Employee e WHERE e.emp_status = ?1")
+    List<Employee> findEmployeesByStatus(String status);
 }
