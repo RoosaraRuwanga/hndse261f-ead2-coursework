@@ -9,6 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.Optional;
 
+// TODO : TOTAL PRICE CALC
+
 @Service
 public class OrderService {
     private final RestTemplate restTemplate = new RestTemplate();
