@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './App.css';
 import OrderList from "./pages/Orders/OrderList";
 import Employees from "./pages/Employees/Employees";
+import Tables from "./pages/Tables/Tables";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         
         <Route path="/orderlist" element={<OrderList />} />
         <Route path="/employees" element={<Employees />} />
+        <Route path="/tables" element={<Tables />} />
       </Routes>
     </BrowserRouter>
   );
