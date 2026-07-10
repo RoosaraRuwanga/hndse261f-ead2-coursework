@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/api")
+@RestController
+@RequestMapping("/api")
 public class ItemController {
 
     @Autowired
@@ -21,12 +22,12 @@ public class ItemController {
     public Item getItemByID(@PathVariable int item_id){return obj.getItemById(item_id);}
 
     //get item by ingredient 1 column
-    @GetMapping(path="/items/{ingredient1_id}")
-    public Item SearchByIngredient1(@PathVariable int ingredient1_id){return obj.SearchByIngredient1(ingredient1_id);}
+    @GetMapping(path="/itemingredient1/{ingredient1_id}")
+    public List<Item> SearchByIngredient1(@PathVariable int ingredient1_id){return obj.SearchByIngredient1(ingredient1_id);}
 
     //get item by ingredient 2 column
-    @GetMapping(path="/items/{ingredient2_id}")
-    public Item SearchByIngredient2(@PathVariable int ingredient2_id){return obj.SearchByIngredient2(ingredient2_id);}
+    @GetMapping(path="/itemingredient2/{ingredient2_id}")
+    public List<Item> SearchByIngredient2(@PathVariable int ingredient2_id){return obj.SearchByIngredient2(ingredient2_id);}
 
     @PostMapping(path="/items")
     public Item createItem(@RequestBody Item itm){

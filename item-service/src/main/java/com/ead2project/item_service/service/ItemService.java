@@ -41,25 +41,13 @@ public class ItemService {
 
 
     //To find item by column ingredient_1_id
-    public Item SearchByIngredient1(int ingredient1_id ){
-        Optional<Item> ing1 = ItemRep.findById(ingredient1_id);
-        if(ing1.isPresent()){
-            return ing1.get();
-        }
-        else{
-            return null;
-        }
+    public List<Item> SearchByIngredient1(int ingredient1_id ){
+        return ItemRep.findItemByIngredient1_id(ingredient1_id);
     }
 
     //To find item by column ingredient_2_id
-    public Item SearchByIngredient2(int ingredient2_id ){
-        Optional<Item> ing2 = ItemRep.findById(ingredient2_id);
-        if(ing2.isPresent()){
-            return ing2.get();
-        }
-        else{
-            return null;
-        }
+    public List<Item> SearchByIngredient2(int ingredient2_id ){
+        return ItemRep.findItemByIngredient2_id(ingredient2_id);
     }
 
 }

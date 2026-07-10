@@ -9,8 +9,11 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item,Integer> {
 
-    //to Search Item by ingredient
+    //to Search Item by ingredient 1
 
     @Query("SELECT i FROM Item i where i.ingredient1_id = ?1")
-    List<Item> findItemByIngredient1_id(String Ingredient1_id);
+    List<Item> findItemByIngredient1_id(int Ingredient1_id);
+
+    @Query("SELECT i FROM Item i where i.ingredient2_id = ?1")
+    List<Item> findItemByIngredient2_id(int Ingredient2_id);
 }
