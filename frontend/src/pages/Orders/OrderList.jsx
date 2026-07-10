@@ -1,24 +1,28 @@
-import '../../App.css';
 import { useEffect, useState } from "react";
 import { getOrders } from "../../services/orderService";
+import OrderCard from "../../components/OrderCard";
 
 export default function OrderList() {
-  const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState([]);
 
-  useEffect(() => {
-        getOrders().then(setOrders);
-  }, []);
+    useEffect(() => {
+        loadOrders();
+    }, []);
 
-  return (
-    <div className = "App">
-        <h1>Order List</h1>
-        <p>Current Orders in System:</p>
-        <ul>
-          {orders.map(order => (
-            <li key={order.id}>{order.id}</li> 
-          ))}
-        </ul>
-    </div>
+    async function loadOrders() {
+        const data = await getOrders();
+        setOrders(data);
+    }
 
-  );
+    return (
+        <div style={{ padding: "20px" }}>
+            <h1>Order List</h1>
+            <p>Current Orders in System:</p>
+            <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {orders.map((order) => (
+                    <OrderCard key={order.id} order={order} />
+                ))}
+            </div>
+        </div>
+    );
 }
