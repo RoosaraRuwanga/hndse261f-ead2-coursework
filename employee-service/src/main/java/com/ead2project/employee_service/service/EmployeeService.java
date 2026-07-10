@@ -55,7 +55,6 @@ public class EmployeeService {
 
             // assign order to employee
             employee.setEmp_Status("Assigned");
-            employee.setAssigned_order_id(orderId);
 
             return empRepo.save(employee);
         }
@@ -71,7 +70,6 @@ public class EmployeeService {
 
             // release employee
             employee.setEmp_Status("Available");
-            employee.setAssigned_order_id(null);
 
             return empRepo.save(employee);
         }

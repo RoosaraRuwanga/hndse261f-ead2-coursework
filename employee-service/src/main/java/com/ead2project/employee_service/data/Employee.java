@@ -17,7 +17,6 @@ public class Employee {
     private String role;
     private String emp_status;
     private double salary;
-    private Integer assigned_order_id;
 
     public Employee() {
     }
@@ -30,7 +29,6 @@ public class Employee {
         this.role = role;
         this.emp_status = emp_status;
         this.salary = salary;
-        this.assigned_order_id = assigned_order_id;
     }
 
     public int getEmp_id() {
@@ -87,13 +85,5 @@ public class Employee {
 
     public void setSalary(double salary) {
         this.salary = salary;
-    }
-
-    public Integer getAssigned_order_id() {
-        return assigned_order_id;
-    }
-
-    public void setAssigned_order_id(Integer assigned_order_id) {
-        this.assigned_order_id = assigned_order_id;
     }
 }
