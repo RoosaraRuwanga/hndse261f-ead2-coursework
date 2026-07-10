@@ -4,6 +4,7 @@ import { getOrders } from "../../services/orderService";
 
 export default function OrderList() {
   const [orders, setOrders] = useState([]);
+
   useEffect(() => {
         getOrders().then(setOrders);
   }, []);
@@ -12,11 +13,11 @@ export default function OrderList() {
     <div className = "App">
         <h1>Order List</h1>
         <p>Current Orders in System:</p>
+        <ul>
           {orders.map(order => (
-          <p key={order.id}>
-              {order.id}
-          </p>
+            <li key={order.id}>{order.id}</li> 
           ))}
+        </ul>
     </div>
 
   );
