@@ -18,6 +18,27 @@ password VARCHAR(255) NOT NULL,
  emp_status VARCHAR(255) NOT NULL,
  salary DECIMAL);*/
 
+ /*CREATE DATABASE IF NOT EXISTS db_employee;  (updated database, change with caution!!)
+USE db_employee;
+CREATE TABLE tbl_employee (
+e_id int PRIMARY KEY AUTO_INCREMENT,
+password VARCHAR(255) NOT NULL,
+ name VARCHAR(255) NOT NULL,
+ age INT NOT NULL ,
+ role VARCHAR(255) NOT NULL,
+ emp_status VARCHAR(255) NOT NULL,
+ salary DECIMAL);
+ 
+INSERT INTO tbl_employee (password, name, age, role, emp_status, salary)
+VALUES 
+('pass123', 'John Doe', 28, 'Waiter', 'Available', 45000.00),
+('pass456', 'Jane Smith', 32, 'Chef', 'Available', 60000.00),
+('pass789', 'Mike Brown', 25, 'Cashier', 'Unavailable', 40000.00);
+
+ALTER TABLE tbl_employee ADD COLUMN assigned_order_id INT NULL;
+
+DESCRIBE tbl_employee;*/
+
 CREATE DATABASE db_tables;
 USE db_tables;
 CREATE TABLE tbl_tables (
