@@ -4,12 +4,14 @@ import com.ead2project.employee_service.data.Employee;
 import com.ead2project.employee_service.data.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EmployeeService {
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
     private EmployeeRepository empRepo;
