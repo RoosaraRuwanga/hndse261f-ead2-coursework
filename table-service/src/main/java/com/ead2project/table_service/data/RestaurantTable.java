@@ -3,7 +3,7 @@ package com.ead2project.table_service.data;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tbl_tables")
+@Table(name = "tables")
 public class RestaurantTable {
 
     @Id
@@ -12,13 +12,15 @@ public class RestaurantTable {
 
     private String table_status;
     private Integer assigned_order_id;
+    private Integer assigned_employee_id;
 
     public RestaurantTable() {
     }
 
-    public RestaurantTable(String table_status, Integer assigned_order_id) {
+    public RestaurantTable(String table_status, Integer assigned_order_id, Integer assigned_employee_id) {
         this.table_status = table_status;
         this.assigned_order_id = assigned_order_id;
+        this.assigned_employee_id = assigned_employee_id;
     }
 
     public int getTable_id() {
@@ -43,5 +45,13 @@ public class RestaurantTable {
 
     public void setAssigned_order_id(Integer assigned_order_id) {
         this.assigned_order_id = assigned_order_id;
+    }
+
+    public Integer getAssigned_employee_id() {
+        return assigned_employee_id;
+    }
+
+    public void setAssigned_employee_id(Integer assigned_employee_id) {
+        this.assigned_employee_id = assigned_employee_id;
     }
 }

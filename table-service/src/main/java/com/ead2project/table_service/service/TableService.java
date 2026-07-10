@@ -49,33 +49,43 @@ public class TableService {
 
     public RestaurantTable assignTable(int id, int orderId) {
         Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
-
         if (optionalTable.isPresent()) {
             RestaurantTable table = optionalTable.get();
-
-            // assign order to table
             table.setTable_status("Occupied");
             table.setAssigned_order_id(orderId);
-
             return tabRepo.save(table);
         }
-
         return null;
     }
 
     public RestaurantTable releaseTable(int id) {
         Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
-
         if (optionalTable.isPresent()) {
             RestaurantTable table = optionalTable.get();
-
-            // release table
             table.setTable_status("Free");
             table.setAssigned_order_id(null);
-
             return tabRepo.save(table);
         }
+        return null;
+    }
 
+    public RestaurantTable assignEmployee(int id, int employeeId) {
+        Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
+        if (optionalTable.isPresent()) {
+            RestaurantTable table = optionalTable.get();
+            table.setAssigned_employee_id(employeeId);
+            return tabRepo.save(table);
+        }
+        return null;
+    }
+
+    public RestaurantTable releaseEmployee(int id) {
+        Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
+        if (optionalTable.isPresent()) {
+            RestaurantTable table = optionalTable.get();
+            table.setAssigned_employee_id(null);
+            return tabRepo.save(table);
+        }
         return null;
     }
 

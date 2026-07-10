@@ -24,6 +24,7 @@ public class TableController {
         return obj.getTableById(id);
     }
 
+    @GetMapping(path = "/tables/Free")
     public List<RestaurantTable> getFreeTables(){
         return obj.getFreeTables();
     }
@@ -46,6 +47,16 @@ public class TableController {
     @PutMapping(path = "/tables/{id}/release")
     public RestaurantTable releaseTable(@PathVariable int id){
         return obj.releaseTable(id);
+    }
+
+    @PutMapping(path = "/tables/{id}/assignEmployee/{employeeId}")
+    public RestaurantTable assignEmployee(@PathVariable int id, @PathVariable int employeeId){
+        return obj.assignEmployee(id, employeeId);
+    }
+
+    @PutMapping(path = "/tables/{id}/releaseEmployee")
+    public RestaurantTable releaseEmployee(@PathVariable int id){
+        return obj.releaseEmployee(id);
     }
 
     @DeleteMapping(path = "/tables/{id}")
