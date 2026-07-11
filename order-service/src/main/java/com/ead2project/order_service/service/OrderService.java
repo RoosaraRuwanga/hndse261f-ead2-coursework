@@ -8,12 +8,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 // TODO : TOTAL PRICE CALC
 
 @Service
 public class OrderService {
     private final RestTemplate restTemplate = new RestTemplate();
+    private static final String ITEM_SERVICE_URL = "http://localhost:8084/item-service/api/items/";
 
     @Autowired
     private OrderRepository ordRep;
@@ -74,5 +76,25 @@ public class OrderService {
         order.addItem(itemId);
 
         return ordRep.save(order);
+    }
+
+    private double calculateTotalPrice(List<Integer> itemIds) {
+        double total = 0.0;
+
+        for (Integer itemId : itemIds) {
+            try {
+                Map<String, Object> item = restTemplate.getForObject(
+                        ITEM_SERVICE_URL + itemId,
+                        Map.class
+                );
+                if (item != null && item.get("price") != null) {
+                    total += ((Number) item.get("price")).doubleValue();
+                }
+            } catch (Exception e) {
+                System.out.println("Could not fetch price for item " + itemId + ": " + e.getMessage());
+            }
+        }
+
+        return total;
     }
 }
