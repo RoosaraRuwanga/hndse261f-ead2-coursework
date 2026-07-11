@@ -23,3 +23,17 @@ export async function releaseEmployeeFromTable(id) {
     });
     return response.json();
 }
+
+export async function assignOrderToTable(id, orderId) {
+    const response = await fetch(`${API_URL}/${id}/assign/${orderId}`, {
+        method: "PUT"
+    });
+    return response.json();
+}
+
+export async function releaseOrderFromTable(id) {
+    const response = await fetch(`${API_URL}/${id}/release`, {
+        method: "PUT"
+    });
+    return response.json();
+}
