@@ -1,23 +1,14 @@
 import { useEffect, useState } from "react";
-import { getOrders } from "../../services/orderService";
 import { getAllItems } from "../../services/itemService";
-import OrderCard from "../../components/OrderCard";
 
 export default function OrderList() {
-    const [orders, setOrders] = useState([]);
     const [items, setItems] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [showConfirm, setShowConfirm] = useState(false);
 
     useEffect(() => {
-        loadOrders();
         loadItems();
     }, []);
-
-    async function loadOrders() {
-        const data = await getOrders();
-        setOrders(data);
-    }
 
     async function loadItems() {
         const data = await getAllItems();
@@ -58,76 +49,134 @@ export default function OrderList() {
 
         setSelectedItems([]);
         setShowConfirm(false);
-        loadOrders();
     }
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h1>Order List</h1>
-
-            <div style={{ marginBottom: "30px" }}>
-                <h2>Select Items:</h2>
-                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                    {items.map((item) => (
-                        <label
-                            key={item.item_id}
-                            style={{
-                                border: "1px solid white",
-                                padding: "8px 12px",
-                                color: "white",
-                                cursor: "pointer",
-                                width: "fit-content"
-                            }}
-                        >
-                            <input
-                                type="checkbox"
-                                checked={selectedItems.includes(item.item_id)}
-                                onChange={() => toggleItem(item.item_id)}
-                            />{" "}
-                            {item.name} - Rs. {item.price.toFixed(2)}
-                        </label>
-                    ))}
-                </div>
-
-                <p style={{ marginTop: "12px", fontSize: "18px" }}>
-                    <strong>Running Total: Rs. {calculateRunningTotal().toFixed(2)}</strong>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ padding: "40px", maxWidth: "700px", width: "100%" }}>
+                <h1 style={{ marginBottom: "4px", textAlign: "center" }}>Order List</h1>
+                <p style={{ color: "#bbb", marginBottom: "30px", textAlign: "center" }}>
+                    Select items to build a new order
                 </p>
 
-                <button
-                    onClick={() => setShowConfirm(true)}
-                    disabled={selectedItems.length === 0}
-                >
-                    Checkout
-                </button>
-            </div>
-
-            {showConfirm && (
                 <div
                     style={{
-                        border: "2px solid white",
-                        padding: "20px",
-                        marginBottom: "30px",
-                        maxWidth: "400px",
-                        color: "white"
+                        backgroundColor: "#2a1a1a",
+                        borderRadius: "10px",
+                        padding: "24px",
+                        boxShadow: "0 6px 18px rgba(0,0,0,0.35)"
                     }}
                 >
-                    <h2>Confirm Your Order</h2>
-                    <ul>
-                        {getSelectedItemDetails().map((item) => (
-                            <li key={item.item_id}>
-                                {item.name} - Rs. {item.price.toFixed(2)}
-                            </li>
-                        ))}
-                    </ul>
-                    <p>
-                        <strong>Total: Rs. {calculateRunningTotal().toFixed(2)}</strong>
-                    </p>
-                    <button onClick={confirmOrder}>Confirm Order</button>
-                    <button onClick={() => setShowConfirm(false)} style={{ marginLeft: "10px" }}>
-                        Make Changes
-                    </button>
+                    <h2 style={{ marginTop: 0, marginBottom: "16px", fontSize: "18px" }}>
+                        Menu
+                    </h2>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {items.map((item) => {
+                            const isSelected = selectedItems.includes(item.item_id);
+                            return (
+                                <label
+                                    key={item.item_id}
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        padding: "12px 16px",
+                                        borderRadius: "6px",
+                                        backgroundColor: isSelected ? "#e63946" : "#1f1414",
+                                        border: "1px solid #444",
+                                        cursor: "pointer",
+                                        transition: "background-color 0.15s ease"
+                                    }}
+                                >
+                                    <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={isSelected}
+                                            onChange={() => toggleItem(item.item_id)}
+                                        />
+                                        {item.name}
+                                    </span>
+                                    <span style={{ fontWeight: "bold" }}>
+                                        Rs. {item.price.toFixed(2)}
+                                    </span>
+                                </label>
+                            );
+                        })}
+                    </div>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginTop: "24px",
+                            paddingTop: "16px",
+                            borderTop: "1px solid #444"
+                        }}
+                    >
+                        <span style={{ fontSize: "18px" }}>
+                            <strong>Running Total:</strong> Rs. {calculateRunningTotal().toFixed(2)}
+                        </span>
+                        <button
+                            onClick={() => setShowConfirm(true)}
+                            disabled={selectedItems.length === 0}
+                            style={{
+                                opacity: selectedItems.length === 0 ? 0.5 : 1,
+                                cursor: selectedItems.length === 0 ? "not-allowed" : "pointer"
+                            }}
+                        >
+                            Checkout
+                        </button>
+                    </div>
                 </div>
-            )}
+
+                {showConfirm && (
+                    <div
+                        style={{
+                            backgroundColor: "#2a1a1a",
+                            borderRadius: "10px",
+                            padding: "24px",
+                            marginTop: "24px",
+                            boxShadow: "0 6px 18px rgba(0,0,0,0.35)"
+                        }}
+                    >
+                        <h2 style={{ marginTop: 0 }}>Confirm Your Order</h2>
+                        <div style={{ marginBottom: "16px" }}>
+                            {getSelectedItemDetails().map((item) => (
+                                <div
+                                    key={item.item_id}
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        padding: "6px 0",
+                                        borderBottom: "1px solid #333"
+                                    }}
+                                >
+                                    <span>{item.name}</span>
+                                    <span>Rs. {item.price.toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <p style={{ fontSize: "18px", marginBottom: "20px" }}>
+                            <strong>Total:</strong> Rs. {calculateRunningTotal().toFixed(2)}
+                        </p>
+
+                        <button onClick={confirmOrder}>Confirm Order</button>
+                        <button
+                            onClick={() => setShowConfirm(false)}
+                            style={{
+                                marginLeft: "10px",
+                                backgroundImage: "none",
+                                backgroundColor: "#444"
+                            }}
+                        >
+                            Make Changes
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

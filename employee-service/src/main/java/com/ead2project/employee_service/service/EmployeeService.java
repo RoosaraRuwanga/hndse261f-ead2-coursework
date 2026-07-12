@@ -82,4 +82,14 @@ public class EmployeeService {
     public List<Employee> getAvailableEmployees() {
         return empRepo.findEmployeesByStatus("Available");
     }
+
+    public Employee login(String name, String password) {
+        List<Employee> employees = empRepo.findAll();
+        for (Employee emp : employees) {
+            if (emp.getName().equals(name) && emp.getPassword().equals(password)) {
+                return emp;
+            }
+        }
+        return null;
+    }
 }

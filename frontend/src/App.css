@@ -53,3 +53,7 @@ h1 {
 .App-link {
   color: #61dafb;
 }
+
+body, h1, h2, h3, p, td, th, label {
+  color: rgb(255, 231, 231);
+}

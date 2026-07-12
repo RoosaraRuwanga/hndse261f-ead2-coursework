@@ -57,3 +57,13 @@ export async function releaseEmployeeFromOrder(employeeId, orderId) {
     });
     return response.json();
 }
+
+export async function loginEmployee(name, password) {
+    const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password })
+    });
+    if (!response.ok) return null;
+    return response.json();
+}
