@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/ingredient-service/api/ingredients";
+const API_URL = "https://YOUR-EMPLOYEE-SERVICE.onrender.com/employee-service/api/employees";
 
 export async function getIngredient(id) {
     const response = await fetch(`${API_URL}/${id}`);

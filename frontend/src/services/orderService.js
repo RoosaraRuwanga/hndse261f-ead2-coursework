@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8082/order-service/api/orders";
+const API_URL = "https://YOUR-EMPLOYEE-SERVICE.onrender.com/employee-service/api/employees";
 
 export async function getOrders() {
     const response = await fetch(API_URL);

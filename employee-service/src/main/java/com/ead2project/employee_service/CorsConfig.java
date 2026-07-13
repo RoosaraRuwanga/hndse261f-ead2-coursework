@@ -18,7 +18,8 @@ public class CorsConfig {
                         .allowedOrigins("http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .allowedOrigins("https://hndse261f-ead2-coursework-vercel.vercel.app");
             }
         };
     }
