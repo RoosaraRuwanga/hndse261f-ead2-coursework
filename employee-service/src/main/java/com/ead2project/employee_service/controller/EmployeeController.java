@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "https://my-projects-c1d80.web.app")
 @RestController
 @RequestMapping("/api")
 public class EmployeeController {

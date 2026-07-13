@@ -1,4 +1,5 @@
-const API_URL = "https://YOUR-EMPLOYEE-SERVICE.onrender.com/employee-service/api/employees";
+const API_URL =
+  "https://YOUR-BACKEND-URL/table-service/api/tables";
 
 export async function getTables() {
     const response = await fetch(API_URL);

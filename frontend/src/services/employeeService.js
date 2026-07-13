@@ -1,4 +1,4 @@
-const API_URL = "https://YOUR-EMPLOYEE-SERVICE.onrender.com/employee-service/api/employees";
+const API_URL = "https://my-projects-c1d80.web.app/employee-service/api/employees";
 
 
 export async function getEmployees() {

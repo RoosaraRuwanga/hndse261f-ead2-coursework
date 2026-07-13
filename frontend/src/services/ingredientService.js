@@ -1,4 +1,5 @@
-const API_URL = "https://YOUR-EMPLOYEE-SERVICE.onrender.com/employee-service/api/employees";
+const API_URL =
+  "https://YOUR-BACKEND-URL/ingredient-service/api/ingredients";
 
 export async function getIngredient(id) {
     const response = await fetch(`${API_URL}/${id}`);
