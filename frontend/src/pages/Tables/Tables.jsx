@@ -1,25 +1,11 @@
 import { useEffect, useState } from "react";
-import {
-    getTables,
-    assignEmployeeToTable,
-    releaseEmployeeFromTable,
-    assignOrderToTable,
-    releaseOrderFromTable
-} from "../../services/tableService";
-import { getEmployees } from "../../services/employeeService";
-import { getOrders } from "../../services/orderService";
+import { getTables } from "../../services/tableService";
 
 export default function Tables() {
     const [tables, setTables] = useState([]);
-    const [employees, setEmployees] = useState([]);
-    const [orders, setOrders] = useState([]);
-    const [selectedEmployee, setSelectedEmployee] = useState({});
-    const [selectedOrder, setSelectedOrder] = useState({});
 
     useEffect(() => {
         loadTables();
-        loadEmployees();
-        loadOrders();
     }, []);
 
     async function loadTables() {
@@ -27,70 +13,18 @@ export default function Tables() {
         setTables(data);
     }
 
-    async function loadEmployees() {
-        const data = await getEmployees();
-        setEmployees(data);
-    }
-
-    async function loadOrders() {
-        const data = await getOrders();
-        setOrders(data);
-    }
-
-    function getEmployeeName(id) {
-        const emp = employees.find((e) => e.emp_id === id);
-        return emp ? emp.name : "Unassigned";
-    }
-
-    function getOrderLabel(id) {
-        const order = orders.find((o) => o.id === id);
-        return order ? `Order #${order.id} (${order.status})` : "No order";
-    }
-
-    async function handleAssignEmployee(tableId) {
-        const employeeId = selectedEmployee[tableId];
-        if (!employeeId) return;
-        await assignEmployeeToTable(tableId, employeeId);
-        loadTables();
-    }
-
-    async function handleReleaseEmployee(tableId) {
-        await releaseEmployeeFromTable(tableId);
-        loadTables();
-    }
-
-    async function handleAssignOrder(tableId) {
-        const orderId = selectedOrder[tableId];
-        if (!orderId) return;
-        await assignOrderToTable(tableId, orderId);
-        loadTables();
-    }
-
-    async function handleReleaseOrder(tableId) {
-        await releaseOrderFromTable(tableId);
-        loadTables();
-    }
-
-    const inputStyle = {
-        padding: "6px",
-        borderRadius: "5px",
-        border: "1px solid #444",
-        backgroundColor: "#1f1414",
-        color: "white"
-    };
-
     return (
         <div style={{ display: "flex", justifyContent: "center" }}>
             <div style={{ padding: "40px", maxWidth: "1100px", width: "100%" }}>
                 <h1 style={{ marginBottom: "4px", textAlign: "center" }}>Tables</h1>
                 <p style={{ color: "#bbb", marginBottom: "30px", textAlign: "center" }}>
-                    Assign employees and orders to tables
+                    View table status
                 </p>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {tables.map((table) => (
                         <div
-                            key={table.table_id}
+                            key={table.tableId}
                             style={{
                                 backgroundColor: "#2a1a1a",
                                 borderRadius: "10px",
@@ -102,88 +36,21 @@ export default function Tables() {
                                 style={{
                                     display: "flex",
                                     justifyContent: "space-between",
-                                    alignItems: "center",
-                                    marginBottom: "16px"
+                                    alignItems: "center"
                                 }}
                             >
-                                <h2 style={{ margin: 0 }}>Table {table.table_id}</h2>
+                                <h2 style={{ margin: 0 }}>Table {table.tableNumber ?? table.tableId}</h2>
                                 <span
                                     style={{
                                         padding: "4px 12px",
                                         borderRadius: "12px",
                                         fontSize: "13px",
                                         fontWeight: "bold",
-                                        backgroundColor: table.table_status === "Free" ? "#2d6a4f" : "#e63946"
+                                        backgroundColor: table.status === "Free" ? "#2d6a4f" : "#e63946"
                                     }}
                                 >
-                                    {table.table_status}
+                                    {table.status}
                                 </span>
-                            </div>
-
-                            <div style={{ display: "flex", gap: "40px", flexWrap: "wrap" }}>
-                                <div>
-                                    <p style={{ marginBottom: "6px", color: "#bbb", fontSize: "14px" }}>
-                                        Employee: <strong style={{ color: "white" }}>{getEmployeeName(table.assigned_employee_id)}</strong>
-                                    </p>
-                                    <div style={{ display: "flex", gap: "6px" }}>
-                                        <select
-                                            style={inputStyle}
-                                            value={selectedEmployee[table.table_id] || ""}
-                                            onChange={(e) =>
-                                                setSelectedEmployee({
-                                                    ...selectedEmployee,
-                                                    [table.table_id]: e.target.value
-                                                })
-                                            }
-                                        >
-                                            <option value="">Select employee</option>
-                                            {employees.map((emp) => (
-                                                <option key={emp.emp_id} value={emp.emp_id}>
-                                                    {emp.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <button onClick={() => handleAssignEmployee(table.table_id)}>Assign</button>
-                                        <button
-                                            onClick={() => handleReleaseEmployee(table.table_id)}
-                                            style={{ backgroundColor: "#444", backgroundImage: "none" }}
-                                        >
-                                            Release
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <p style={{ marginBottom: "6px", color: "#bbb", fontSize: "14px" }}>
-                                        Order: <strong style={{ color: "white" }}>{getOrderLabel(table.assigned_order_id)}</strong>
-                                    </p>
-                                    <div style={{ display: "flex", gap: "6px" }}>
-                                        <select
-                                            style={inputStyle}
-                                            value={selectedOrder[table.table_id] || ""}
-                                            onChange={(e) =>
-                                                setSelectedOrder({
-                                                    ...selectedOrder,
-                                                    [table.table_id]: e.target.value
-                                                })
-                                            }
-                                        >
-                                            <option value="">Select order</option>
-                                            {orders.map((order) => (
-                                                <option key={order.id} value={order.id}>
-                                                    Order #{order.id} ({order.status})
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <button onClick={() => handleAssignOrder(table.table_id)}>Assign</button>
-                                        <button
-                                            onClick={() => handleReleaseOrder(table.table_id)}
-                                            style={{ backgroundColor: "#444", backgroundImage: "none" }}
-                                        >
-                                            Release
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     ))}

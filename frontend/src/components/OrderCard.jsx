@@ -11,7 +11,7 @@ export default function OrderCard({ order }) {
                 order.items.map((itemId) => getItem(itemId))
             );
             setItemDetails(results);
-            const sum = results.reduce((acc, item) => acc + item.price, 0);
+            const sum = results.reduce((acc, item) => acc + (item?.price ?? 0), 0);
             setTotal(sum);
         }
         if (order.items && order.items.length > 0) {
@@ -33,10 +33,10 @@ export default function OrderCard({ order }) {
             <p><strong>Order Items:</strong></p>
             <ul>
                 {itemDetails.map((item) => (
-                    <li key={item.item_id}>{item.name} - ${item.price.toFixed(2)}</li>
+                    <li key={item.item_id}>{item.name} - ${(item.price ?? 0).toFixed(2)}</li>
                 ))}
             </ul>
-            <p><strong>Total Price:</strong> ${total.toFixed(2)}</p>
+            <p><strong>Total Price:</strong> ${(total ?? 0).toFixed(2)}</p>
         </div>
     );
 }

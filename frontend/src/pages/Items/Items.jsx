@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAllItems } from "../../services/itemService";
+import { getAllItems, updateItem } from "../../services/itemService";
 import { getIngredient, getAllIngredients } from "../../services/ingredientService";
-
-const API_URL = "http://localhost:8084/item-service/api/items";
 
 export default function Items() {
     const [items, setItems] = useState([]);
@@ -64,11 +62,7 @@ export default function Items() {
             ingredient2_amt: parseInt(form.ingredient2_amt)
         };
 
-        await fetch(API_URL, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
+        await updateItem(form.itemId, payload);
 
         closeEdit();
         loadItems();
@@ -107,7 +101,7 @@ export default function Items() {
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                         {filteredItems.map((item) => (
                             <div
-                                key={item.item_id}
+                                key={item.itemId}
                                 style={{
                                     backgroundColor: "#2a1a1a",
                                     borderRadius: "8px",
@@ -126,7 +120,7 @@ export default function Items() {
                                     </div>
                                 </div>
                                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                                    <span style={{ fontWeight: "bold" }}>Rs. {item.price.toFixed(2)}</span>
+                                    <span style={{ fontWeight: "bold" }}>Rs. {(item.price ?? 0).toFixed(2)}</span>
                                     <button onClick={() => openEdit(item)}>Edit</button>
                                 </div>
                             </div>

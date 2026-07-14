@@ -9,12 +9,12 @@ import {
 export default function Employees() {
     const [employees, setEmployees] = useState([]);
     const [form, setForm] = useState({
-        emp_id: null,
+        employeeId: null,
         password: "",
         name: "",
         age: "",
         role: "",
-        emp_status: "Available",
+        status: "Available",
         salary: ""
     });
     const [editing, setEditing] = useState(false);
@@ -41,9 +41,9 @@ export default function Employees() {
         };
 
         if (editing) {
-            await updateEmployee(payload);
+            await updateEmployee(payload.employeeId, payload);
         } else {
-            delete payload.emp_id;
+            delete payload.employeeId;
             await createEmployee(payload);
         }
 
@@ -63,12 +63,12 @@ export default function Employees() {
 
     function resetForm() {
         setForm({
-            emp_id: null,
+            employeeId: null,
             password: "",
             name: "",
             age: "",
             role: "",
-            emp_status: "Available",
+            status: "Available",
             salary: ""
         });
         setEditing(false);
@@ -111,7 +111,7 @@ export default function Employees() {
                         <input name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} required style={{ ...inputStyle, width: "70px" }} />
                         <input name="role" placeholder="Role" value={form.role} onChange={handleChange} required style={inputStyle} />
                         <input name="salary" type="number" step="0.01" placeholder="Salary" value={form.salary} onChange={handleChange} required style={inputStyle} />
-                        <select name="emp_status" value={form.emp_status} onChange={handleChange} style={inputStyle}>
+                        <select name="status" value={form.status} onChange={handleChange} style={inputStyle}>
                             <option value="Available">Available</option>
                             <option value="Assigned">Assigned</option>
                             <option value="Unavailable">Unavailable</option>
@@ -150,16 +150,16 @@ export default function Employees() {
                         </thead>
                         <tbody>
                             {employees.map((emp) => (
-                                <tr key={emp.emp_id} style={{ borderBottom: "1px solid #333" }}>
+                                <tr key={emp.employeeId} style={{ borderBottom: "1px solid #333" }}>
                                     <td style={{ padding: "10px" }}>{emp.name}</td>
                                     <td style={{ padding: "10px" }}>{emp.age}</td>
                                     <td style={{ padding: "10px" }}>{emp.role}</td>
                                     <td style={{ padding: "10px" }}>{emp.salary}</td>
-                                    <td style={{ padding: "10px" }}>{emp.emp_status}</td>
+                                    <td style={{ padding: "10px" }}>{emp.status}</td>
                                     <td style={{ padding: "10px" }}>
                                         <button onClick={() => handleEdit(emp)}>Edit</button>
                                         <button
-                                            onClick={() => handleDelete(emp.emp_id)}
+                                            onClick={() => handleDelete(emp.employeeId)}
                                             style={{ marginLeft: "6px", backgroundColor: "#444", backgroundImage: "none" }}
                                         >
                                             Delete

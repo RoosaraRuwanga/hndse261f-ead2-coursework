@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginEmployee } from "../../services/employeeService";
+
 
 export default function Login({ onLoginSuccess }) {
     const [username, setUsername] = useState("");
@@ -8,19 +8,16 @@ export default function Login({ onLoginSuccess }) {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    async function handleSubmit(e) {
+    function handleSubmit(e) {
         e.preventDefault();
         setError("");
 
-        const employee = await loginEmployee(username, password);
-
-        if (employee) {
-            localStorage.setItem("loggedInEmployee", JSON.stringify(employee));
-            onLoginSuccess(employee);
-            navigate("/orderlist");
-        } else {
-            setError("Invalid username or password.");
-        }
+        // Backend does not expose a /login endpoint.
+        // Use the entered username as the display name.
+        const employee = { name: username, role: "Employee" };
+        localStorage.setItem("loggedInEmployee", JSON.stringify(employee));
+        onLoginSuccess(employee);
+        navigate("/orderlist");
     }
 
     return (

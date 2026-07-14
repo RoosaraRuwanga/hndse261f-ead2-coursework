@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAllIngredients } from "../../services/ingredientService";
-
-const API_URL = "http://localhost:8080/ingredient-service/api/ingredients";
+import { getAllIngredients, createIngredient, updateIngredient, deleteIngredient } from "../../services/ingredientService";
 const LOW_STOCK_THRESHOLD = 20;
 
 export default function Ingredients() {
@@ -9,7 +7,7 @@ export default function Ingredients() {
     const [search, setSearch] = useState("");
     const [selectedId, setSelectedId] = useState(null);
     const [showForm, setShowForm] = useState(false);
-    const [form, setForm] = useState({ ingredient_id: null, name: "", quantity: "" });
+    const [form, setForm] = useState({ ingredientId: null, name: "", quantity: "" });
     const [editing, setEditing] = useState(false);
 
     useEffect(() => {
@@ -32,13 +30,13 @@ export default function Ingredients() {
     }
 
     function openAddForm() {
-        setForm({ ingredient_id: null, name: "", quantity: "" });
+        setForm({ ingredientId: null, name: "", quantity: "" });
         setEditing(false);
         setShowForm(true);
     }
 
     function openEditForm() {
-        const selected = ingredients.find((i) => i.ingredient_id === selectedId);
+        const selected = ingredients.find((i) => i.ingredientId === selectedId);
         if (!selected) return;
         setForm(selected);
         setEditing(true);
@@ -47,7 +45,7 @@ export default function Ingredients() {
 
     function closeForm() {
         setShowForm(false);
-        setForm({ ingredient_id: null, name: "", quantity: "" });
+        setForm({ ingredientId: null, name: "", quantity: "" });
     }
 
     async function handleSubmit(e) {
@@ -55,18 +53,10 @@ export default function Ingredients() {
         const payload = { ...form, quantity: parseInt(form.quantity) };
 
         if (editing) {
-            await fetch(API_URL, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
+            await updateIngredient(payload.ingredientId, payload);
         } else {
-            delete payload.ingredient_id;
-            await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
+            delete payload.ingredientId;
+            await createIngredient(payload);
         }
 
         closeForm();
@@ -75,7 +65,7 @@ export default function Ingredients() {
     }
 
     async function handleDelete(id) {
-        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        await deleteIngredient(id);
         if (selectedId === id) setSelectedId(null);
         loadIngredients();
     }
@@ -184,11 +174,11 @@ export default function Ingredients() {
                         <tbody>
                             {filteredIngredients.map((ing) => {
                                 const status = getStatus(ing.quantity);
-                                const isSelected = selectedId === ing.ingredient_id;
+                                const isSelected = selectedId === ing.ingredientId;
                                 return (
                                     <tr
-                                        key={ing.ingredient_id}
-                                        onClick={() => setSelectedId(ing.ingredient_id)}
+                                        key={ing.ingredientId}
+                                        onClick={() => setSelectedId(ing.ingredientId)}
                                         style={{
                                             borderBottom: "1px solid #333",
                                             cursor: "pointer",
@@ -214,7 +204,7 @@ export default function Ingredients() {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDelete(ing.ingredient_id);
+                                                    handleDelete(ing.ingredientId);
                                                 }}
                                                 style={{
                                                     backgroundColor: "#444",

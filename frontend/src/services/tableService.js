@@ -1,40 +1,32 @@
-const API_URL =
-  "https://YOUR-BACKEND-URL/table-service/api/tables";
+import BASE_URL, { request } from "./api";
+
+const API_URL = `${BASE_URL}/tables`;
 
 export async function getTables() {
-    const response = await fetch(API_URL);
-    return response.json();
+    return request(API_URL);
 }
 
 export async function getTable(id) {
-    const response = await fetch(`${API_URL}/${id}`);
-    return response.json();
+    return request(`${API_URL}/${id}`);
 }
 
-export async function assignEmployeeToTable(id, employeeId) {
-    const response = await fetch(`${API_URL}/${id}/assignEmployee/${employeeId}`, {
-        method: "PUT"
+export async function createTable(table) {
+    return request(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(table)
     });
-    return response.json();
 }
 
-export async function releaseEmployeeFromTable(id) {
-    const response = await fetch(`${API_URL}/${id}/releaseEmployee`, {
-        method: "PUT"
+export async function updateTable(id, table) {
+    const payload = { ...table, tableId: id };
+    return request(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
     });
-    return response.json();
 }
 
-export async function assignOrderToTable(id, orderId) {
-    const response = await fetch(`${API_URL}/${id}/assign/${orderId}`, {
-        method: "PUT"
-    });
-    return response.json();
-}
-
-export async function releaseOrderFromTable(id) {
-    const response = await fetch(`${API_URL}/${id}/release`, {
-        method: "PUT"
-    });
-    return response.json();
+export async function deleteTable(id) {
+    return request(`${API_URL}/${id}`, { method: "DELETE" });
 }

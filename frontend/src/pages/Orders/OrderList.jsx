@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllItems } from "../../services/itemService";
+import { createOrder } from "../../services/orderService";
 
 export default function OrderList() {
     const [items, setItems] = useState([]);
@@ -25,26 +26,23 @@ export default function OrderList() {
 
     function calculateRunningTotal() {
         return selectedItems.reduce((sum, itemId) => {
-            const item = items.find((i) => i.item_id === itemId);
-            return sum + (item ? item.price : 0);
+            const item = items.find((i) => i.itemId === itemId);
+            return sum + (item ? (item.price ?? 0) : 0);
         }, 0);
     }
 
     function getSelectedItemDetails() {
         return selectedItems
-            .map((id) => items.find((i) => i.item_id === id))
+            .map((id) => items.find((i) => i.itemId === id))
             .filter(Boolean);
     }
 
     async function confirmOrder() {
-        await fetch("http://localhost:8082/order-service/api/orders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                status: "Pending",
-                items: selectedItems,
-                total_price: 0
-            })
+        await createOrder({
+            customerName: "Guest",
+            totalAmount: calculateRunningTotal(),
+            orderStatus: "Pending",
+            paymentStatus: "Unpaid"
         });
 
         setSelectedItems([]);
@@ -73,10 +71,10 @@ export default function OrderList() {
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                         {items.map((item) => {
-                            const isSelected = selectedItems.includes(item.item_id);
+                            const isSelected = selectedItems.includes(item.itemId);
                             return (
                                 <label
-                                    key={item.item_id}
+                                    key={item.itemId}
                                     style={{
                                         display: "flex",
                                         justifyContent: "space-between",
@@ -93,12 +91,12 @@ export default function OrderList() {
                                         <input
                                             type="checkbox"
                                             checked={isSelected}
-                                            onChange={() => toggleItem(item.item_id)}
+                                            onChange={() => toggleItem(item.itemId)}
                                         />
                                         {item.name}
                                     </span>
                                     <span style={{ fontWeight: "bold" }}>
-                                        Rs. {item.price.toFixed(2)}
+                                        Rs. {(item.price ?? 0).toFixed(2)}
                                     </span>
                                 </label>
                             );
@@ -145,7 +143,7 @@ export default function OrderList() {
                         <div style={{ marginBottom: "16px" }}>
                             {getSelectedItemDetails().map((item) => (
                                 <div
-                                    key={item.item_id}
+                                    key={item.itemId}
                                     style={{
                                         display: "flex",
                                         justifyContent: "space-between",
@@ -154,7 +152,7 @@ export default function OrderList() {
                                     }}
                                 >
                                     <span>{item.name}</span>
-                                    <span>Rs. {item.price.toFixed(2)}</span>
+                                    <span>Rs. {(item.price ?? 0).toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>
