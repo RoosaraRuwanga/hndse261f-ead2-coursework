@@ -2,6 +2,7 @@ package com.ead2project.table_service.service;
 
 import com.ead2project.table_service.data.RestaurantTable;
 import com.ead2project.table_service.data.TableRepository;
+import com.ead2project.table_service.data.TableStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,7 @@ public class TableService {
 
     public RestaurantTable getTableById(int id) {
         Optional<RestaurantTable> table = tabRepo.findById(id);
-        if(table.isPresent()){
-            return table.get();
-        }
-        return null;
+        return table.orElse(null);
     }
 
     public RestaurantTable createTable(RestaurantTable table) {
@@ -51,7 +49,7 @@ public class TableService {
         Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
         if (optionalTable.isPresent()) {
             RestaurantTable table = optionalTable.get();
-            table.setTable_status("Occupied");
+            table.setTable_status(TableStatus.IN_USE);
             table.setAssigned_order_id(orderId);
             return tabRepo.save(table);
         }
@@ -62,8 +60,18 @@ public class TableService {
         Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
         if (optionalTable.isPresent()) {
             RestaurantTable table = optionalTable.get();
-            table.setTable_status("Free");
+            table.setTable_status(TableStatus.FREE);
             table.setAssigned_order_id(null);
+            return tabRepo.save(table);
+        }
+        return null;
+    }
+
+    public RestaurantTable reserveTable(int id) {
+        Optional<RestaurantTable> optionalTable = tabRepo.findById(id);
+        if (optionalTable.isPresent()) {
+            RestaurantTable table = optionalTable.get();
+            table.setTable_status(TableStatus.RESERVED);
             return tabRepo.save(table);
         }
         return null;
@@ -90,9 +98,11 @@ public class TableService {
     }
 
     public List<RestaurantTable> getFreeTables() {
-        return tabRepo.findAll()
-                .stream()
-                .filter(t -> "Free".equalsIgnoreCase(t.getTable_status()))
-                .toList();
+        return tabRepo.findTablesByStatus(TableStatus.FREE);
+    }
+
+    public RestaurantTable getTableByOrderId(int orderId) {
+        Optional<RestaurantTable> table = tabRepo.findByAssigned_order_id(orderId);
+        return table.orElse(null);
     }
 }

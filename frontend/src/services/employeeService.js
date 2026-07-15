@@ -1,4 +1,5 @@
-const API_URL = "https://my-projects-c1d80.web.app/employee-service/api/employees";
+// employeeService.js
+const API_URL = process.env.REACT_APP_EMPLOYEE_API_URL || "http://localhost:8081/employee-service/api/employees";
 
 
 export async function getEmployees() {

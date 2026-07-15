@@ -1,5 +1,4 @@
-const API_URL =
-  "https://YOUR-BACKEND-URL/ingredient-service/api/ingredients";
+const API_URL = process.env.REACT_APP_INGREDIENT_API_URL || "http://localhost:8080/ingredient-service/api/ingredients";
 
 export async function getIngredient(id) {
     const response = await fetch(`${API_URL}/${id}`);

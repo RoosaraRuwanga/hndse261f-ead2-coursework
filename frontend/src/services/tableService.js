@@ -1,6 +1,6 @@
-const API_URL =
-  "https://YOUR-BACKEND-URL/table-service/api/tables";
-
+// tableService.js
+const API_URL = process.env.REACT_APP_TABLE_API_URL || "http://localhost:8083/table-service/api/tables";
+    
 export async function getTables() {
     const response = await fetch(API_URL);
     return response.json();

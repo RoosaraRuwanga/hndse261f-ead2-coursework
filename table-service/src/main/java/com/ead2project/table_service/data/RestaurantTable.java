@@ -10,14 +10,16 @@ public class RestaurantTable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int table_id;
 
-    private String table_status;
+    @Enumerated(EnumType.STRING)
+    private TableStatus table_status;
+
     private Integer assigned_order_id;
     private Integer assigned_employee_id;
 
     public RestaurantTable() {
     }
 
-    public RestaurantTable(String table_status, Integer assigned_order_id, Integer assigned_employee_id) {
+    public RestaurantTable(TableStatus table_status, Integer assigned_order_id, Integer assigned_employee_id) {
         this.table_status = table_status;
         this.assigned_order_id = assigned_order_id;
         this.assigned_employee_id = assigned_employee_id;
@@ -32,10 +34,10 @@ public class RestaurantTable {
     }
 
     public String getTable_status() {
-        return table_status;
+        return table_status.name();
     }
 
-    public void setTable_status(String table_status) {
+    public void setTable_status(TableStatus table_status) {
         this.table_status = table_status;
     }
 

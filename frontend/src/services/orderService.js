@@ -1,6 +1,5 @@
-const API_URL =
-  "https://YOUR-BACKEND-URL/order-service/api/orders";
-
+// orderService.js
+const API_URL = process.env.REACT_APP_ORDER_API_URL || "http://localhost:8082/order-service/api/orders";
 export async function getOrders() {
     const response = await fetch(API_URL);
     return response.json();
