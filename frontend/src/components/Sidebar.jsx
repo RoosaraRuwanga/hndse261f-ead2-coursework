@@ -23,7 +23,6 @@ export default function Sidebar({ employeeName, employeeRole }) {
                 padding: "20px 0"
             }}
         >
-            <h2 style={{ padding: "0 20px", marginBottom: "30px" }}>PizzaFlow</h2>
 
             <nav style={{ flex: 1 }}>
                 {navItems.map((item) => {

@@ -30,11 +30,6 @@ public class TableController {
         return obj.getFreeTables();
     }
 
-    @GetMapping(path = "/tables/order/{orderId}")
-    public RestaurantTable getTableByOrderId(@PathVariable int orderId){
-        return obj.getTableByOrderId(orderId);
-    }
-
     @PostMapping(path = "/tables")
     public RestaurantTable createTable(@RequestBody RestaurantTable table){
         return obj.createTable(table);
@@ -53,11 +48,6 @@ public class TableController {
     @PutMapping(path = "/tables/{id}/release")
     public RestaurantTable releaseTable(@PathVariable int id){
         return obj.releaseTable(id);
-    }
-
-    @PutMapping(path = "/tables/{id}/reserve")
-    public RestaurantTable reserveTable(@PathVariable int id){
-        return obj.reserveTable(id);
     }
 
     @PutMapping(path = "/tables/{id}/assignEmployee/{employeeId}")
