@@ -43,4 +43,9 @@ public class IngredientController {
     public IngredientTable deleteIngredientById(@PathVariable int id){
         return obj.deleteIngredientById(id);
     }
+
+    @PostMapping(path = "/ingredients/{id}/adjust")
+    public IngredientTable adjustIngredientQuantity(@PathVariable int id, @RequestParam int delta) {
+        return obj.adjustQuantity(id, delta);
+    }
 }

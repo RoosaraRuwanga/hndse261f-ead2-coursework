@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
 import { getAllItems } from "../../services/itemService";
 
+const ORDER_SERVICE_URL = "http://localhost:8082/order-service/api/orders";
+
 export default function OrderList() {
     const [items, setItems] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderError, setOrderError] = useState(null);
 
     useEffect(() => {
         loadItems();
     }, []);
 
     async function loadItems() {
-        const data = await getAllItems();
-        setItems(data);
+        try {
+            const data = await getAllItems();
+            setItems(data);
+        } catch (err) {
+            console.error("Failed to load items:", err);
+        }
     }
 
     function toggleItem(itemId) {
@@ -37,18 +45,60 @@ export default function OrderList() {
     }
 
     async function confirmOrder() {
-        await fetch("http://localhost:8082/order-service/api/orders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                status: "Pending",
-                items: selectedItems,
-                total_price: 0
-            })
-        });
+        setIsSubmitting(true);
+        setOrderError(null);
 
-        setSelectedItems([]);
-        setShowConfirm(false);
+        try {
+            // 1. Create an empty order shell first
+            const createRes = await fetch(ORDER_SERVICE_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    status: "Pending",
+                    items: [],
+                    total_price: 0
+                })
+            });
+
+            if (!createRes.ok) {
+                throw new Error(`Failed to create order: ${createRes.status}`);
+            }
+
+            const order = await createRes.json();
+
+            // 2. Add each selected item one at a time so ingredient stock
+            //    is decremented per item (sequential to avoid race conditions
+            //    on shared ingredients between items).
+            const failedItems = [];
+
+            for (const itemId of selectedItems) {
+                const addRes = await fetch(`${ORDER_SERVICE_URL}/${order.id}/items`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(itemId)
+                });
+
+                if (!addRes.ok) {
+                    const itemName =
+                        items.find((i) => i.item_id === itemId)?.name || `Item #${itemId}`;
+                    failedItems.push(itemName);
+                }
+            }
+
+            if (failedItems.length > 0) {
+                setOrderError(
+                    `Order placed, but these items couldn't be added (likely insufficient stock): ${failedItems.join(", ")}`
+                );
+            }
+
+            setSelectedItems([]);
+            setShowConfirm(false);
+        } catch (err) {
+            console.error("Failed to confirm order:", err);
+            setOrderError("Something went wrong while placing the order. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -56,8 +106,23 @@ export default function OrderList() {
             <div style={{ padding: "40px", maxWidth: "700px", width: "100%" }}>
                 <h1 style={{ marginBottom: "4px", textAlign: "center" }}>Order List</h1>
                 <p style={{ color: "#bbb", marginBottom: "30px", textAlign: "center" }}>
-                    Select items to build a new order
+                    Select items
                 </p>
+
+                {orderError && (
+                    <div
+                        style={{
+                            backgroundColor: "#4a1a1a",
+                            border: "1px solid #e63946",
+                            borderRadius: "6px",
+                            padding: "12px 16px",
+                            marginBottom: "20px",
+                            color: "#ffb3b3"
+                        }}
+                    >
+                        {orderError}
+                    </div>
+                )}
 
                 <div
                     style={{
@@ -163,9 +228,12 @@ export default function OrderList() {
                             <strong>Total:</strong> Rs. {calculateRunningTotal().toFixed(2)}
                         </p>
 
-                        <button onClick={confirmOrder}>Confirm Order</button>
+                        <button onClick={confirmOrder} disabled={isSubmitting}>
+                            {isSubmitting ? "Placing Order..." : "Confirm Order"}
+                        </button>
                         <button
                             onClick={() => setShowConfirm(false)}
+                            disabled={isSubmitting}
                             style={{
                                 marginLeft: "10px",
                                 backgroundImage: "none",

@@ -20,16 +20,15 @@ public class OrderService {
     @Autowired
     private OrderRepository ordRep;
 
-    public List<Order> getAllOrders(){
+    public List<Order> getAllOrders() {
         return ordRep.findAll();
     }
 
-    public Order getOrderById(int id){
+    public Order getOrderById(int id) {
         Optional<Order> ord = ordRep.findById(id);
-        if(ord.isPresent()){
+        if (ord.isPresent()) {
             return ord.get();
-        }
-        else{
+        } else {
             return null;
         }
     }
@@ -46,7 +45,7 @@ public class OrderService {
         ordRep.deleteById(id);
     }
 
-    public Order updateOrderStatus(int id, String status){
+    public Order updateOrderStatus(int id, String status) {
         Optional<Order> optionalOrd = ordRep.findById(id);
         if (optionalOrd.isPresent()) {
             Order ord = optionalOrd.get();
@@ -61,21 +60,11 @@ public class OrderService {
         return ordRep.getOrderByStatus(status);
     }
 
-    public List<Integer> getOrderItems(int id)
-    {
+    public List<Integer> getOrderItems(int id) {
         Order order = ordRep.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order does not exist!"));
 
         return order.getItems();
-    }
-
-    public Order addItemToOrder(int orderId, int itemId) {
-        Order order = ordRep.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order does not exist!"));
-
-        order.addItem(itemId);
-
-        return ordRep.save(order);
     }
 
     private double calculateTotalPrice(List<Integer> itemIds) {
@@ -84,9 +73,7 @@ public class OrderService {
         for (Integer itemId : itemIds) {
             try {
                 Map<String, Object> item = restTemplate.getForObject(
-                        ITEM_SERVICE_URL + itemId,
-                        Map.class
-                );
+                        ITEM_SERVICE_URL + itemId, Map.class);
                 if (item != null && item.get("price") != null) {
                     total += ((Number) item.get("price")).doubleValue();
                 }
@@ -96,5 +83,20 @@ public class OrderService {
         }
 
         return total;
+    }
+
+    public Order addItemToOrder(int orderId, int itemId) {
+        Order order = ordRep.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order does not exist!"));
+
+        try {
+            restTemplate.postForObject(ITEM_SERVICE_URL + itemId + "/consume", null, Void.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot add item " + itemId + " to order: " + e.getMessage());
+        }
+
+        order.addItem(itemId);
+
+        return ordRep.save(order);
     }
 }

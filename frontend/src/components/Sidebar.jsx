@@ -25,7 +25,7 @@ export default function Sidebar({ employeeName, employeeRole }) {
                 top: 0
             }}
         >
-            <h2 style={{ padding: "0 20px", marginBottom: "30px" }}>PizzaHub</h2>
+            <h2 style={{ padding: "0 20px", marginBottom: "30px" }}>Backgammon Pizza</h2>
 
             <nav
                 style={{

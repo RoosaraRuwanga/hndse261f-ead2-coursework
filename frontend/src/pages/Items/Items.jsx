@@ -18,26 +18,43 @@ export default function Items() {
     }, []);
 
     async function loadItems() {
-        const data = await getAllItems();
-        setItems(data);
+        try {
+            const data = await getAllItems();
+            setItems(data);
 
-        const namesMap = {};
-        for (const item of data) {
-            if (item.ingredient1_id) {
-                const ing1 = await getIngredient(item.ingredient1_id);
-                namesMap[item.ingredient1_id] = ing1.name;
+            // Collect the unique ingredient IDs we actually need
+            const idsNeeded = new Set();
+            for (const item of data) {
+                if (item.ingredient1_id) idsNeeded.add(item.ingredient1_id);
+                if (item.ingredient2_id) idsNeeded.add(item.ingredient2_id);
             }
-            if (item.ingredient2_id) {
-                const ing2 = await getIngredient(item.ingredient2_id);
-                namesMap[item.ingredient2_id] = ing2.name;
-            }
+
+            // Fetch them all in parallel using the real ingredientService function
+            const namesMap = {};
+            await Promise.all(
+                [...idsNeeded].map(async (id) => {
+                    try {
+                        const ing = await getIngredient(id);
+                        if (ing) namesMap[id] = ing.name;
+                    } catch (err) {
+                        console.error(`Failed to load ingredient ${id}:`, err);
+                    }
+                })
+            );
+
+            setIngredientNames(namesMap);
+        } catch (err) {
+            console.error("Failed to load items:", err);
         }
-        setIngredientNames(namesMap);
     }
 
     async function loadAllIngredients() {
-        const data = await getAllIngredients();
-        setAllIngredients(data);
+        try {
+            const data = await getAllIngredients();
+            setAllIngredients(data);
+        } catch (err) {
+            console.error("Failed to load ingredients:", err);
+        }
     }
 
     function openEdit(item) {
@@ -64,11 +81,15 @@ export default function Items() {
             ingredient2_amt: parseInt(form.ingredient2_amt)
         };
 
-        await fetch(API_URL, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        });
+        try {
+            await fetch(API_URL, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+        } catch (err) {
+            console.error("Failed to save item:", err);
+        }
 
         closeEdit();
         loadItems();
