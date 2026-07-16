@@ -3,6 +3,39 @@ import { getAllItems } from "../../services/itemService";
 
 const ORDER_SERVICE_URL = "http://localhost:8082/order-service/api/orders";
 
+// Fixed display order for categories. Anything that doesn't match a
+// keyword below falls into "Other" at the end.
+const CATEGORY_ORDER = ["Pizza", "Sides", "Drinks", "Desserts", "Other"];
+
+// Frontend-only categorization: no `category` field exists in the backend,
+// so we infer it from the item name. Keywords are checked in order, so
+// put more specific words first if you add new ones. Case-insensitive.
+const CATEGORY_KEYWORDS = {
+    Pizza: ["pizza"],
+    Drinks: ["cola", "soda", "tea", "juice", "lemonade", "lime soda", "coffee"],
+    Desserts: ["cake", "tiramisu", "ice cream", "brownie", "pudding", "pie"],
+    Sides: ["fries", "rings", "wings", "bread", "breadsticks", "nuggets", "salad"]
+};
+
+function inferCategory(itemName) {
+    const nameLower = itemName.toLowerCase();
+
+    for (const category of Object.keys(CATEGORY_KEYWORDS)) {
+        const keywords = CATEGORY_KEYWORDS[category];
+        const matches = keywords.some((kw) => {
+            // Word-boundary match instead of plain substring match, so
+            // "cola" doesn't false-positive inside "chocolate", etc.
+            const pattern = new RegExp(`\\b${kw}\\b`, "i");
+            return pattern.test(nameLower);
+        });
+        if (matches) {
+            return category;
+        }
+    }
+
+    return "Other";
+}
+
 export default function OrderList() {
     const [items, setItems] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -44,12 +77,27 @@ export default function OrderList() {
             .filter(Boolean);
     }
 
+    // Groups items into { "Pizza": [...], "Sides": [...], ... } and returns
+    // them in CATEGORY_ORDER, skipping empty categories.
+    function getGroupedItems() {
+        const groups = {};
+
+        for (const item of items) {
+            const category = inferCategory(item.name);
+            if (!groups[category]) groups[category] = [];
+            groups[category].push(item);
+        }
+
+        return CATEGORY_ORDER
+            .filter((cat) => groups[cat] && groups[cat].length > 0)
+            .map((cat) => ({ category: cat, items: groups[cat] }));
+    }
+
     async function confirmOrder() {
         setIsSubmitting(true);
         setOrderError(null);
 
         try {
-            // 1. Create an empty order shell first
             const createRes = await fetch(ORDER_SERVICE_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -66,9 +114,6 @@ export default function OrderList() {
 
             const order = await createRes.json();
 
-            // 2. Add each selected item one at a time so ingredient stock
-            //    is decremented per item (sequential to avoid race conditions
-            //    on shared ingredients between items).
             const failedItems = [];
 
             for (const itemId of selectedItems) {
@@ -101,6 +146,8 @@ export default function OrderList() {
         }
     }
 
+    const groupedItems = getGroupedItems();
+
     return (
         <div style={{ display: "flex", justifyContent: "center" }}>
             <div style={{ padding: "40px", maxWidth: "700px", width: "100%" }}>
@@ -132,43 +179,56 @@ export default function OrderList() {
                         boxShadow: "0 6px 18px rgba(0,0,0,0.35)"
                     }}
                 >
-                    <h2 style={{ marginTop: 0, marginBottom: "16px", fontSize: "18px" }}>
-                        Menu
-                    </h2>
+                    {groupedItems.map(({ category, items: categoryItems }) => (
+                        <div key={category} style={{ marginBottom: "24px" }}>
+                            <h2
+                                style={{
+                                    marginTop: 0,
+                                    marginBottom: "12px",
+                                    fontSize: "16px",
+                                    color: "#e63946",
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.5px"
+                                }}
+                            >
+                                {category}
+                            </h2>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                        {items.map((item) => {
-                            const isSelected = selectedItems.includes(item.item_id);
-                            return (
-                                <label
-                                    key={item.item_id}
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        padding: "12px 16px",
-                                        borderRadius: "6px",
-                                        backgroundColor: isSelected ? "#e63946" : "#1f1414",
-                                        border: "1px solid #444",
-                                        cursor: "pointer",
-                                        transition: "background-color 0.15s ease"
-                                    }}
-                                >
-                                    <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                        <input
-                                            type="checkbox"
-                                            checked={isSelected}
-                                            onChange={() => toggleItem(item.item_id)}
-                                        />
-                                        {item.name}
-                                    </span>
-                                    <span style={{ fontWeight: "bold" }}>
-                                        Rs. {item.price.toFixed(2)}
-                                    </span>
-                                </label>
-                            );
-                        })}
-                    </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                {categoryItems.map((item) => {
+                                    const isSelected = selectedItems.includes(item.item_id);
+                                    return (
+                                        <label
+                                            key={item.item_id}
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                padding: "12px 16px",
+                                                borderRadius: "6px",
+                                                backgroundColor: isSelected ? "#e63946" : "#1f1414",
+                                                border: "1px solid #444",
+                                                cursor: "pointer",
+                                                transition: "background-color 0.15s ease"
+                                            }}
+                                        >
+                                            <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={() => toggleItem(item.item_id)}
+                                                />
+                                                {item.name}
+                                            </span>
+                                            <span style={{ fontWeight: "bold" }}>
+                                                Rs. {item.price.toFixed(2)}
+                                            </span>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
 
                     <div
                         style={{
