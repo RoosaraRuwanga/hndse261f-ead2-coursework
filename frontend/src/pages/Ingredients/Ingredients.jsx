@@ -12,6 +12,9 @@ export default function Ingredients() {
     const [form, setForm] = useState({ ingredient_id: null, name: "", quantity: "" });
     const [editing, setEditing] = useState(false);
 
+    const LOW_STOCK_THRESHOLD = 20;
+    const CRITICAL_STOCK_THRESHOLD = 5;
+    
     useEffect(() => {
         loadIngredients();
     }, []);
@@ -22,8 +25,9 @@ export default function Ingredients() {
     }
 
     function getStatus(quantity) {
-        if (quantity <= 0) return { label: "Needs Restock", color: "#e63946" };
-        if (quantity < LOW_STOCK_THRESHOLD) return { label: "Low", color: "#f4a261" };
+        if (quantity <= 0) return { label: "⚠ Out of Stock", color: "#e63946" };
+        if (quantity <= CRITICAL_STOCK_THRESHOLD) return { label: "⚠ Critical - Reorder Now", color: "#d62828" };
+        if (quantity < LOW_STOCK_THRESHOLD) return { label: "Low Stock", color: "#f4a261" };
         return { label: "Good", color: "#2d6a4f" };
     }
 

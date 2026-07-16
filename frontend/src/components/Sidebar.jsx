@@ -15,16 +15,27 @@ export default function Sidebar({ employeeName, employeeRole }) {
         <div
             style={{
                 width: "220px",
-                minHeight: "100vh",
+                height: "100vh",
                 backgroundColor: "#1a1a1a",
                 color: "white",
                 display: "flex",
                 flexDirection: "column",
-                padding: "20px 0"
+                padding: "20px 0",
+                position: "sticky",
+                top: 0
             }}
         >
+            <h2 style={{ padding: "0 20px", marginBottom: "30px" }}>PizzaHub</h2>
 
-            <nav style={{ flex: 1 }}>
+            <nav
+                style={{
+                    flex: 1,
+                    overflowY: "auto",
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#e63946 #1a1a1a"
+                }}
+                className="sidebar-nav"
+            >
                 {navItems.map((item) => {
                     const isActive = location.pathname === item.path;
                     return (
