@@ -15,6 +15,7 @@ export default function Tables() {
     const [orders, setOrders] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState({});
     const [selectedOrder, setSelectedOrder] = useState({});
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         loadTables();
@@ -23,18 +24,30 @@ export default function Tables() {
     }, []);
 
     async function loadTables() {
-        const data = await getTables();
-        setTables(data);
+        try {
+            const data = await getTables();
+            setTables(data);
+        } catch (err) {
+            console.error("Failed to load tables:", err);
+        }
     }
 
     async function loadEmployees() {
-        const data = await getEmployees();
-        setEmployees(data);
+        try {
+            const data = await getEmployees();
+            setEmployees(data);
+        } catch (err) {
+            console.error("Failed to load employees:", err);
+        }
     }
 
     async function loadOrders() {
-        const data = await getOrders();
-        setOrders(data);
+        try {
+            const data = await getOrders();
+            setOrders(data);
+        } catch (err) {
+            console.error("Failed to load orders:", err);
+        }
     }
 
     function getEmployeeName(id) {
@@ -50,25 +63,49 @@ export default function Tables() {
     async function handleAssignEmployee(tableId) {
         const employeeId = selectedEmployee[tableId];
         if (!employeeId) return;
-        await assignEmployeeToTable(tableId, employeeId);
-        loadTables();
+
+        setError(null);
+        try {
+            await assignEmployeeToTable(tableId, employeeId);
+            await loadTables();
+            await loadEmployees();
+        } catch (err) {
+            setError(err.message);
+        }
     }
 
     async function handleReleaseEmployee(tableId) {
-        await releaseEmployeeFromTable(tableId);
-        loadTables();
+        setError(null);
+        try {
+            await releaseEmployeeFromTable(tableId);
+            await loadTables();
+            await loadEmployees();
+        } catch (err) {
+            setError(err.message);
+        }
     }
 
     async function handleAssignOrder(tableId) {
         const orderId = selectedOrder[tableId];
         if (!orderId) return;
-        await assignOrderToTable(tableId, orderId);
-        loadTables();
+
+        setError(null);
+        try {
+            await assignOrderToTable(tableId, orderId);
+            await loadTables();
+        } catch (err) {
+            setError(err.message);
+        }
     }
 
     async function handleReleaseOrder(tableId) {
-        await releaseOrderFromTable(tableId);
-        loadTables();
+        setError(null);
+        try {
+            await releaseOrderFromTable(tableId);
+            await loadTables();
+        } catch (err) {
+            setError(err.message);
+        }
     }
 
     const inputStyle = {
@@ -86,6 +123,21 @@ export default function Tables() {
                 <p style={{ color: "#bbb", marginBottom: "30px", textAlign: "center" }}>
                     Assign employees and orders to tables
                 </p>
+
+                {error && (
+                    <div
+                        style={{
+                            backgroundColor: "#4a1a1a",
+                            border: "1px solid #e63946",
+                            borderRadius: "6px",
+                            padding: "12px 16px",
+                            marginBottom: "20px",
+                            color: "#ffb3b3"
+                        }}
+                    >
+                        {error}
+                    </div>
+                )}
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {tables.map((table) => (
@@ -139,7 +191,7 @@ export default function Tables() {
                                             <option value="">Select employee</option>
                                             {employees.map((emp) => (
                                                 <option key={emp.emp_id} value={emp.emp_id}>
-                                                    {emp.name}
+                                                    {emp.name} {emp.emp_status ? `(${emp.emp_status})` : ""}
                                                 </option>
                                             ))}
                                         </select>

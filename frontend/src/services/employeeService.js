@@ -35,8 +35,8 @@ export async function getAvailableEmployees() {
     return response.json();
 }
 
-export async function updateEmployee(id, employee) {
-    const response = await fetch(`${API_URL}/${id}`, {
+export async function updateEmployee(employee) {
+    const response = await fetch(API_URL, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
