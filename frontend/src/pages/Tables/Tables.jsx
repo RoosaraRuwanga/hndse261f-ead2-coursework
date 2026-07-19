@@ -9,13 +9,14 @@ import {
 import { getEmployees } from "../../services/employeeService";
 import { getOrders } from "../../services/orderService";
 
+const API_URL = "http://localhost:8083/table-service/api/tables";
+
 export default function Tables() {
     const [tables, setTables] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [orders, setOrders] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState({});
     const [selectedOrder, setSelectedOrder] = useState({});
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         loadTables();
@@ -24,30 +25,18 @@ export default function Tables() {
     }, []);
 
     async function loadTables() {
-        try {
-            const data = await getTables();
-            setTables(data);
-        } catch (err) {
-            console.error("Failed to load tables:", err);
-        }
+        const data = await getTables();
+        setTables(data);
     }
 
     async function loadEmployees() {
-        try {
-            const data = await getEmployees();
-            setEmployees(data);
-        } catch (err) {
-            console.error("Failed to load employees:", err);
-        }
+        const data = await getEmployees();
+        setEmployees(data);
     }
 
     async function loadOrders() {
-        try {
-            const data = await getOrders();
-            setOrders(data);
-        } catch (err) {
-            console.error("Failed to load orders:", err);
-        }
+        const data = await getOrders();
+        setOrders(data);
     }
 
     function getEmployeeName(id) {
@@ -60,52 +49,46 @@ export default function Tables() {
         return order ? `Order #${order.id} (${order.status})` : "No order";
     }
 
+    async function handleAddTable() {
+        await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                table_status: "Free",
+                assigned_order_id: null,
+                assigned_employee_id: null
+            })
+        });
+        loadTables();
+    }
+
+    async function handleDeleteTable(tableId) {
+        await fetch(`${API_URL}/${tableId}`, { method: "DELETE" });
+        loadTables();
+    }
+
     async function handleAssignEmployee(tableId) {
         const employeeId = selectedEmployee[tableId];
         if (!employeeId) return;
-
-        setError(null);
-        try {
-            await assignEmployeeToTable(tableId, employeeId);
-            await loadTables();
-            await loadEmployees();
-        } catch (err) {
-            setError(err.message);
-        }
+        await assignEmployeeToTable(tableId, employeeId);
+        loadTables();
     }
 
     async function handleReleaseEmployee(tableId) {
-        setError(null);
-        try {
-            await releaseEmployeeFromTable(tableId);
-            await loadTables();
-            await loadEmployees();
-        } catch (err) {
-            setError(err.message);
-        }
+        await releaseEmployeeFromTable(tableId);
+        loadTables();
     }
 
     async function handleAssignOrder(tableId) {
         const orderId = selectedOrder[tableId];
         if (!orderId) return;
-
-        setError(null);
-        try {
-            await assignOrderToTable(tableId, orderId);
-            await loadTables();
-        } catch (err) {
-            setError(err.message);
-        }
+        await assignOrderToTable(tableId, orderId);
+        loadTables();
     }
 
     async function handleReleaseOrder(tableId) {
-        setError(null);
-        try {
-            await releaseOrderFromTable(tableId);
-            await loadTables();
-        } catch (err) {
-            setError(err.message);
-        }
+        await releaseOrderFromTable(tableId);
+        loadTables();
     }
 
     const inputStyle = {
@@ -120,24 +103,13 @@ export default function Tables() {
         <div style={{ display: "flex", justifyContent: "center" }}>
             <div style={{ padding: "40px", maxWidth: "1100px", width: "100%" }}>
                 <h1 style={{ marginBottom: "4px", textAlign: "center" }}>Tables</h1>
-                <p style={{ color: "#bbb", marginBottom: "30px", textAlign: "center" }}>
+                <p style={{ color: "#bbb", marginBottom: "20px", textAlign: "center" }}>
                     Assign employees and orders to tables
                 </p>
 
-                {error && (
-                    <div
-                        style={{
-                            backgroundColor: "#4a1a1a",
-                            border: "1px solid #e63946",
-                            borderRadius: "6px",
-                            padding: "12px 16px",
-                            marginBottom: "20px",
-                            color: "#ffb3b3"
-                        }}
-                    >
-                        {error}
-                    </div>
-                )}
+                <div style={{ textAlign: "center", marginBottom: "30px" }}>
+                    <button onClick={handleAddTable}>Add Table</button>
+                </div>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                     {tables.map((table) => (
@@ -159,17 +131,30 @@ export default function Tables() {
                                 }}
                             >
                                 <h2 style={{ margin: 0 }}>Table {table.table_id}</h2>
-                                <span
-                                    style={{
-                                        padding: "4px 12px",
-                                        borderRadius: "12px",
-                                        fontSize: "13px",
-                                        fontWeight: "bold",
-                                        backgroundColor: table.table_status === "Free" ? "#2d6a4f" : "#e63946"
-                                    }}
-                                >
-                                    {table.table_status}
-                                </span>
+                                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                    <span
+                                        style={{
+                                            padding: "4px 12px",
+                                            borderRadius: "12px",
+                                            fontSize: "13px",
+                                            fontWeight: "bold",
+                                            backgroundColor: table.table_status === "Free" ? "#2d6a4f" : "#e63946"
+                                        }}
+                                    >
+                                        {table.table_status}
+                                    </span>
+                                    <button
+                                        onClick={() => handleDeleteTable(table.table_id)}
+                                        style={{
+                                            backgroundColor: "#444",
+                                            backgroundImage: "none",
+                                            padding: "6px 12px",
+                                            fontSize: "13px"
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
                             </div>
 
                             <div style={{ display: "flex", gap: "40px", flexWrap: "wrap" }}>
@@ -191,7 +176,7 @@ export default function Tables() {
                                             <option value="">Select employee</option>
                                             {employees.map((emp) => (
                                                 <option key={emp.emp_id} value={emp.emp_id}>
-                                                    {emp.name} {emp.emp_status ? `(${emp.emp_status})` : ""}
+                                                    {emp.name}
                                                 </option>
                                             ))}
                                         </select>

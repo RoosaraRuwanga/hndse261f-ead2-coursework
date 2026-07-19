@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// for hosting, goes unused at the moment
 @CrossOrigin(origins = "https://my-projects-c1d80.web.app")
 @RestController
 @RequestMapping("/api")

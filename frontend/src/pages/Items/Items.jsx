@@ -22,14 +22,12 @@ export default function Items() {
             const data = await getAllItems();
             setItems(data);
 
-            // Collect the unique ingredient IDs we actually need
             const idsNeeded = new Set();
             for (const item of data) {
                 if (item.ingredient1_id) idsNeeded.add(item.ingredient1_id);
                 if (item.ingredient2_id) idsNeeded.add(item.ingredient2_id);
             }
 
-            // Fetch them all in parallel using the real ingredientService function
             const namesMap = {};
             await Promise.all(
                 [...idsNeeded].map(async (id) => {
@@ -95,6 +93,15 @@ export default function Items() {
         loadItems();
     }
 
+    async function handleDelete(id) {
+        try {
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        } catch (err) {
+            console.error("Failed to delete item:", err);
+        }
+        loadItems();
+    }
+
     const filteredItems = items.filter((item) =>
         item.name.toLowerCase().includes(search.toLowerCase())
     );
@@ -149,6 +156,12 @@ export default function Items() {
                                 <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                                     <span style={{ fontWeight: "bold" }}>Rs. {item.price.toFixed(2)}</span>
                                     <button onClick={() => openEdit(item)}>Edit</button>
+                                    <button
+                                        onClick={() => handleDelete(item.item_id)}
+                                        style={{ backgroundColor: "#444", backgroundImage: "none" }}
+                                    >
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
                         ))}
